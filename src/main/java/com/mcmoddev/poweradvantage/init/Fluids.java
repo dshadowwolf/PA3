@@ -34,7 +34,7 @@ public class Fluids extends com.mcmoddev.lib.init.Fluids {
 		fluid.setViscosity(1);
 		fluid.setTemperature(373);
 		fluid.setLuminosity(0);
-		fluid.setColor(0xFFFFFFFF);
+		fluid.setColor(0x89CBDBFC);
 		fluid.setUnlocalizedName(PowerAdvantage.MODID + ".steam");
 		FluidRegistry.registerFluid(fluid);
 		FluidRegistry.addBucketForFluid(fluid);

@@ -8,21 +8,16 @@ import com.mcmoddev.lib.data.SharedStrings;
 import com.mcmoddev.lib.events.MMDLibRegisterBlocks;
 import com.mcmoddev.lib.item.ItemMMDBlock;
 import com.mcmoddev.lib.material.MMDMaterial;
+import com.mcmoddev.lib.block.MMDBlockWithTile;
 
 import com.mcmoddev.poweradvantage.PowerAdvantage;
-import com.mcmoddev.poweradvantage.blocks.BlockInfinite;
+import com.mcmoddev.poweradvantage.blocks.BlockFrame;
+import com.mcmoddev.poweradvantage.blocks.BlockInfinitePower;
+import com.mcmoddev.poweradvantage.blocks.BlockInfiniteSteam;
 import com.mcmoddev.poweradvantage.data.Names;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.block.model.ModelBakery;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -55,9 +50,16 @@ public class Blocks extends com.mcmoddev.lib.init.Blocks {
     	PowerAdvantage.LOGGER.info("Registering Blocks with MMDLib!");
     	MMDMaterial myMat = Materials.getMaterialByName("pa-machines");
     	CreativeTabs pa_tab = ItemGroups.getTab(PowerAdvantage.MODID, "tab");
-    	addNewBlock(new BlockInfinite(Material.PISTON, "steam"), Names.INFINITE_STEAM.toString(), myMat, pa_tab);
-    	addNewBlock(new BlockInfinite(Material.PISTON, "electricity"), Names.INFINITE_ELECTRICITY.toString(), myMat, pa_tab);
-    	addNewBlock(new BlockInfinite(Material.PISTON, "quantum"), Names.INFINITE_QUANTUM.toString(), myMat, pa_tab);
+    	addNewBlock(new BlockInfiniteSteam(), Names.INFINITE_STEAM.toString(), myMat, pa_tab);
+    	addNewBlock(new BlockInfinitePower(), Names.INFINITE_POWER.toString(), myMat, pa_tab);
+    	Block steelFrame = new BlockFrame(Materials.getMaterialByName("steel"));
+    	steelFrame.setHardness(0.75f);
+    	addNewBlock(steelFrame, Names.FRAME.toString(), Materials.getMaterialByName("steel"), pa_tab);
+    	if (!Materials.getMaterialByName("steel").hasBlock("block")) {
+    		MMDMaterial steel = Materials.getMaterialByName("steel");
+    		create(com.mcmoddev.lib.data.Names.BLOCK, steel);
+    		create(com.mcmoddev.lib.data.Names.BARS, steel);
+    	}
     	PowerAdvantage.LOGGER.info("End of block registration, %d blocks registered with MMDLib", myMat.getBlocks().size());
     }
     
@@ -71,34 +73,10 @@ public class Blocks extends com.mcmoddev.lib.init.Blocks {
     	MMDMaterial machines = Materials.getMaterialByName("pa-machines");
     	PowerAdvantage.LOGGER.info("Trying to register my blocks - %d in number", machines.getBlocks().size());
     	machines.getBlocks().stream().forEach( bl -> { PowerAdvantage.LOGGER.info("Registering block %s", bl.getRegistryName()) ; event.getRegistry().register(bl); } );
+    	machines.getBlocks().stream().filter( bl -> bl instanceof MMDBlockWithTile).forEach( bl -> ((MMDBlockWithTile)bl).registerTile());
+    	event.getRegistry().register(Materials.getMaterialByName("steel").getBlock(Names.FRAME.toString()));
+    	Materials.getMaterialByName("steel").getBlocks().stream().filter(bl -> bl.getRegistryName().getNamespace().equals(PowerAdvantage.MODID)).forEach( bl -> event.getRegistry().register(bl));
     	event.getRegistry().register(machines.getFluidBlock());
     }
 
-    @SubscribeEvent
-    public static void registerItems(final RegistryEvent.Register<Item> event) {
-    	List<ItemStack> machines = Materials.getMaterialByName("pa-machines").getItemRegistry().entrySet().stream().map(ent -> ent.getValue()).collect(Collectors.toList());
-    	// Did we get ItemBlocks in the Block.addBlock() call ?
-    	PowerAdvantage.LOGGER.info("Trying for registration of items or itemblocks, %d in number", machines.size());
-    	machines.stream().map(ItemStack::getItem).filter(it -> !it.getRegistryName().getPath().equalsIgnoreCase("steam")).forEach((Item it) -> { PowerAdvantage.LOGGER.info("Registering ItemBlock %s", it.getRegistryName()); event.getRegistry().register(it); });
-    }
-    
-    @SubscribeEvent
-    public static void registerModels(final ModelRegistryEvent event) {
-    	List<ItemStack> machines = Materials.getMaterialByName("pa-machines").getItemRegistry().entrySet().stream().map(ent -> ent.getValue()).collect(Collectors.toList());
-    	PowerAdvantage.LOGGER.info("Trying for registration of #inventory variants, %d in number", machines.size());
-    	machines.stream()
-    	.map(ItemStack::getItem)
-    	.forEach(it -> {
-    		PowerAdvantage.LOGGER.info("Registering #inventory variant for %s", it.getRegistryName());
-    		ModelLoader.setCustomModelResourceLocation(it, 0, new ModelResourceLocation(it.getRegistryName(), "inventory"));
-    	});
-
-    	final Block block = Materials.getMaterialByName("pa-machines").getBlock("steam");
-    	final Item item = Item.getItemFromBlock(block);
-    	final ResourceLocation resLoc = block.getRegistryName();
-    	final FluidStateMapper mapper = new FluidStateMapper( resLoc.toString() );
-    	ModelBakery.registerItemVariants(item);
-    	ModelLoader.setCustomMeshDefinition(item, mapper);
-    	ModelLoader.setCustomStateMapper(block, mapper);
-    }
 }

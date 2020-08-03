@@ -31,7 +31,7 @@ item.poweradvantage.bioplastic_ingot.name=は、バイオプラスチックイ�
 item.poweradvantage.sprocket.name=スプロケット
 
 tile.poweradvantage.infinite_steam.name=無限の蒸気動力
-tile.poweradvantage.infinite_electricity.name=無限の電力
+tile.poweradvantage.infinite_power.name=無限の電力
 tile.poweradvantage.infinite_quantum.name=無限の量子パワー
 
 

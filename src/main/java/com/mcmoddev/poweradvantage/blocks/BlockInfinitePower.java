@@ -17,12 +17,12 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockInfinite extends MMDBlockWithTile<TileInfiniteEnergy> {
+public class BlockInfinitePower extends MMDBlockWithTile<TileInfiniteEnergy> {
         public static final PropertyDirection FACING = PropertyDirection.create("facing");
 
-        public BlockInfinite(Material material, String name) {
-                super(TileInfiniteEnergy.class, TileInfiniteEnergy::new, material);
-                setTranslationKey(PowerAdvantage.MODID + "." + name);
+        public BlockInfinitePower() {
+                super(TileInfiniteEnergy.class, TileInfiniteEnergy::new, Material.PISTON);
+                setTranslationKey(PowerAdvantage.MODID + ".electricity");
                 //setRegistryName(new ResourceLocation(PowerAdvantage.MODID, name));
                 this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH);
         }
