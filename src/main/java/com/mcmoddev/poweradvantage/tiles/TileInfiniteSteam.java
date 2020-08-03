@@ -5,10 +5,8 @@ import com.mcmoddev.lib.container.gui.GuiContext;
 import com.mcmoddev.lib.container.gui.IWidgetGui;
 import com.mcmoddev.lib.container.gui.layout.GridLayout;
 import com.mcmoddev.lib.tile.MMDStandardTileEntity;
-import com.mcmoddev.lib.util.LoggingUtil;
 import com.mcmoddev.poweradvantage.feature.InfiniteFluidSourceFeature;
 
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
 public class TileInfiniteSteam extends MMDStandardTileEntity {

@@ -1,9 +1,5 @@
 package com.mcmoddev.poweradvantage.init;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.mcmoddev.lib.client.renderer.FluidStateMapper;
 import com.mcmoddev.lib.data.SharedStrings;
 import com.mcmoddev.lib.events.MMDLibRegisterBlocks;
 import com.mcmoddev.lib.item.ItemMMDBlock;
@@ -54,12 +50,7 @@ public class Blocks extends com.mcmoddev.lib.init.Blocks {
     	addNewBlock(new BlockInfinitePower(), Names.INFINITE_POWER.toString(), myMat, pa_tab);
     	Block steelFrame = new BlockFrame(Materials.getMaterialByName("steel"));
     	steelFrame.setHardness(0.75f);
-    	addNewBlock(steelFrame, Names.FRAME.toString(), Materials.getMaterialByName("steel"), pa_tab);
-    	if (!Materials.getMaterialByName("steel").hasBlock("block")) {
-    		MMDMaterial steel = Materials.getMaterialByName("steel");
-    		create(com.mcmoddev.lib.data.Names.BLOCK, steel);
-    		create(com.mcmoddev.lib.data.Names.BARS, steel);
-    	}
+    	addNewBlock(steelFrame, Names.STEEL_FRAME.toString(), myMat, pa_tab);
     	PowerAdvantage.LOGGER.info("End of block registration, %d blocks registered with MMDLib", myMat.getBlocks().size());
     }
     
@@ -68,14 +59,13 @@ public class Blocks extends com.mcmoddev.lib.init.Blocks {
      *
      * @param event The Event.
      */
+    @SuppressWarnings("rawtypes")
     @SubscribeEvent
     public static void registerBlocks(final RegistryEvent.Register<Block> event) {
     	MMDMaterial machines = Materials.getMaterialByName("pa-machines");
     	PowerAdvantage.LOGGER.info("Trying to register my blocks - %d in number", machines.getBlocks().size());
     	machines.getBlocks().stream().forEach( bl -> { PowerAdvantage.LOGGER.info("Registering block %s", bl.getRegistryName()) ; event.getRegistry().register(bl); } );
     	machines.getBlocks().stream().filter( bl -> bl instanceof MMDBlockWithTile).forEach( bl -> ((MMDBlockWithTile)bl).registerTile());
-    	event.getRegistry().register(Materials.getMaterialByName("steel").getBlock(Names.FRAME.toString()));
-    	Materials.getMaterialByName("steel").getBlocks().stream().filter(bl -> bl.getRegistryName().getNamespace().equals(PowerAdvantage.MODID)).forEach( bl -> event.getRegistry().register(bl));
     	event.getRegistry().register(machines.getFluidBlock());
     }
 

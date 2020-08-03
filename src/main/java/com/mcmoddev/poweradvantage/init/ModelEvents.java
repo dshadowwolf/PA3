@@ -23,6 +23,7 @@ public class ModelEvents {
     @SubscribeEvent
     public static void registerModels(final ModelRegistryEvent event) {
     	List<ItemStack> machines = Materials.getMaterialByName("pa-machines").getItemRegistry().entrySet().stream().map(ent -> ent.getValue()).collect(Collectors.toList());
+    	machines.addAll(Materials.getMaterialByName("steel").getItems().stream().filter( it -> it.getItem().getRegistryName().getNamespace().equals(PowerAdvantage.MODID)).collect(Collectors.toList()));
     	PowerAdvantage.LOGGER.info("Trying for registration of #inventory variants, %d in number", machines.size());
     	machines.stream()
     	.map(ItemStack::getItem)

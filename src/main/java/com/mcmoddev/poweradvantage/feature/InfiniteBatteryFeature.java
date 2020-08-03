@@ -43,6 +43,9 @@ public class InfiniteBatteryFeature extends ForgeEnergyBatteryFeature implements
 	
 	@Override
 	public void update() {
+		if ( this.buffer.getStored() < 65535) {
+			this.buffer.store(65535 - this.buffer.getStored(), true);
+		}
 		for( EnumFacing facing : EnumFacing.values() ) {
 			TileEntity target = getAdjacentTE(facing);
 			if(target != null && target.hasCapability(CapabilityEnergy.ENERGY, facing.getOpposite())) {

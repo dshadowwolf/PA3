@@ -18,7 +18,5 @@ public class Materials extends com.mcmoddev.lib.init.Materials {
     @SubscribeEvent
     public static void init(final MMDLibRegisterMaterials event) {
     	createOrelessRareMaterial("pa-machine", MaterialType.METAL, 0.75f, 1.00f, 0.00f, 0xFFFFFFFF);
-    	if (!Materials.hasMaterial("steel")) 
-    		createAlloyMaterial("steel", MaterialType.METAL, 8.0d, 15.0d, 2.0d, 0xFFD5D3E5);
     }
 }

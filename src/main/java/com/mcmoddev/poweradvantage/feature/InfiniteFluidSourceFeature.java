@@ -18,6 +18,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 
 public class InfiniteFluidSourceFeature extends FluidTankFeature implements ITickable {
 	private final TileEntity source;
+	@SuppressWarnings("unused")
 	private final String fluidName;
 	private final int storageAmount;
 
@@ -31,7 +32,7 @@ public class InfiniteFluidSourceFeature extends FluidTankFeature implements ITic
 	}
 
 	private void doInteraction(TileEntity targetEntity, IFluidHandler target) {
-		int sendMax = target.fill(getInternalTank().drain(65535, false), false);
+		int sendMax = target.fill(getInternalTank().drain(storageAmount, false), false);
 		if (sendMax > 0) {
 			target.fill(getInternalTank().drain(sendMax, false), true);
 			this.setDirty(FeatureDirtyLevel.GUI);
