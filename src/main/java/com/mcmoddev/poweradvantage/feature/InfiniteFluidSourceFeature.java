@@ -18,7 +18,6 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 
 public class InfiniteFluidSourceFeature extends FluidTankFeature implements ITickable {
 	private final TileEntity source;
-	@SuppressWarnings("unused")
 	private final String fluidName;
 	private final int storageAmount;
 
@@ -50,6 +49,10 @@ public class InfiniteFluidSourceFeature extends FluidTankFeature implements ITic
 
 	@Override
 	public void update() {
+		if (getInternalTank().getFluidAmount() < storageAmount*2 || getExternalTank().getFluidAmount() < storageAmount *2) {
+			getInternalTank().fill(FluidRegistry.getFluidStack(fluidName, storageAmount*2), true);
+			getExternalTank().fill(FluidRegistry.getFluidStack(fluidName, storageAmount*2), true);			
+		}
 		for( EnumFacing facing : EnumFacing.values() ) {
 			TileEntity target = getAdjacentTE(facing);
 			if(target != null && target.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite())) {
