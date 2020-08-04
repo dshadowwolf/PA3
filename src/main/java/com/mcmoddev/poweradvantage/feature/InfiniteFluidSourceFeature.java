@@ -1,17 +1,14 @@
 package com.mcmoddev.poweradvantage.feature;
 
-import javax.annotation.Nullable;
-
 import com.mcmoddev.lib.container.gui.GuiContext;
 import com.mcmoddev.lib.container.gui.IWidgetGui;
 import com.mcmoddev.lib.feature.FeatureDirtyLevel;
 import com.mcmoddev.lib.feature.FluidTankFeature;
+import com.mcmoddev.poweradvantage.util.MachineHelpers;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -38,15 +35,6 @@ public class InfiniteFluidSourceFeature extends FluidTankFeature implements ITic
 		}
 	}
 
-	@Nullable
-	private TileEntity getAdjacentTE(EnumFacing facing) {
-		BlockPos pos = source.getPos().offset(facing);
-		World world = source.getWorld();
-
-		if (world == null || !world.isBlockLoaded(pos)) return null;
-		return world.getTileEntity(pos);
-	}
-
 	@Override
 	public void update() {
 		if (getInternalTank().getFluidAmount() < storageAmount*2 || getExternalTank().getFluidAmount() < storageAmount *2) {
@@ -54,7 +42,7 @@ public class InfiniteFluidSourceFeature extends FluidTankFeature implements ITic
 			getExternalTank().fill(FluidRegistry.getFluidStack(fluidName, storageAmount*2), true);			
 		}
 		for( EnumFacing facing : EnumFacing.values() ) {
-			TileEntity target = getAdjacentTE(facing);
+			TileEntity target = MachineHelpers.getNeighboringTileEntity(source.getWorld(), source.getPos(), facing);
 			if(target != null && target.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite())) {
 				IFluidHandler tCap = (IFluidHandler) target.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite());
 				doInteraction(target, tCap);
