@@ -27,8 +27,9 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 public class FluidDrainFeature extends FluidTankFeature implements ITickable {
+	private final static int TICKS_PER_WORK = 30;
 	private final TileEntity source;
-	private int nextWork = 20;
+	private int nextWork = TICKS_PER_WORK;
 	
 	public FluidDrainFeature(String key, int capacity, TileEntity source) {
 		super(key, capacity, fs -> true, fs -> true);
@@ -49,7 +50,7 @@ public class FluidDrainFeature extends FluidTankFeature implements ITickable {
 	@Override
 	public void update() {
 		if (nextWork == 0) {
-			nextWork = 20;
+			nextWork = TICKS_PER_WORK;
 		} else {
 			nextWork--;
 			return;
@@ -103,7 +104,8 @@ public class FluidDrainFeature extends FluidTankFeature implements ITickable {
 			if (distances.size() == 0) return;
 			int max_d = distances.stream().max(Integer::compare).get();
 			getExternalTank().fill(new FluidStack( fluid, 1000), true);
-			source.getWorld().setBlockToAir(blocks.get(max_d));
+			//source.getWorld().setBlockToAir(blocks.get(max_d));
+			source.getWorld().setBlockState(blocks.get(max_d), Blocks.AIR.getDefaultState(), 1);
 		}
 	}
 	

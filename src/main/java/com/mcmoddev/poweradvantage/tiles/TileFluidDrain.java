@@ -13,7 +13,7 @@ public class TileFluidDrain extends MMDStandardTileEntity {
 	public TileFluidDrain() {
 		super();
 		PowerAdvantage.LOGGER.info("TileFluidDrain.<init>");
-		feat = new FluidDrainFeature("drain", 1000, this);
+		feat = new FluidDrainFeature("drain", 2000, this);
 		this.addFeature(feat);
 	}
 
