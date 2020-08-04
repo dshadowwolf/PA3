@@ -10,7 +10,7 @@ import com.google.common.collect.Maps;
 import net.minecraft.util.IStringSerializable;
 
 public enum Names implements IStringSerializable {
-	INFINITE, CONVEYORFILTER, INFINITE_STEAM, INFINITE_POWER, STEEL_FRAME, FLUID_DRAIN;
+	INFINITE, CONVEYORFILTER, INFINITE_STEAM, INFINITE_POWER, STEEL_FRAME, FLUID_DRAIN, FLUID_DISCHARGE;
 	
 	protected static final TreeMap<Integer, Names> MAP = Maps.newTreeMap();
 

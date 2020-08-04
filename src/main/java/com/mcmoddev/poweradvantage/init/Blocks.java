@@ -7,6 +7,7 @@ import com.mcmoddev.lib.material.MMDMaterial;
 import com.mcmoddev.lib.block.MMDBlockWithTile;
 
 import com.mcmoddev.poweradvantage.PowerAdvantage;
+import com.mcmoddev.poweradvantage.blocks.BlockFluidDischarge;
 import com.mcmoddev.poweradvantage.blocks.BlockFluidDrain;
 import com.mcmoddev.poweradvantage.blocks.BlockFrame;
 import com.mcmoddev.poweradvantage.blocks.BlockInfinitePower;
@@ -15,7 +16,6 @@ import com.mcmoddev.poweradvantage.data.Names;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -56,6 +56,7 @@ public class Blocks extends com.mcmoddev.lib.init.Blocks {
     	steelFrame.setHardness(0.75f);
     	addNewBlock(steelFrame, Names.STEEL_FRAME.toString(), myMat, pa_tab);
     	addNewBlock(new BlockFluidDrain(), Names.FLUID_DRAIN.toString(), myMat, pa_tab);
+    	addNewBlock(new BlockFluidDischarge(), Names.FLUID_DISCHARGE.toString(), myMat, pa_tab);
     	PowerAdvantage.LOGGER.info("End of block registration, %d blocks registered with MMDLib", myMat.getBlocks().size());
     }
     

@@ -1,8 +1,18 @@
 {
-    "variants": {
-        "facing=east": { "model": "poweradvantage:fluid_discharge", "y": 90 },
-        "facing=north": { "model": "poweradvantage:fluid_discharge" },
-        "facing=south": { "model": "poweradvantage:fluid_discharge", "y": 180 },
-        "facing=west": { "model": "poweradvantage:fluid_discharge", "y": 270 }
+  "forge_marker": 1,
+  "defaults": {
+    "model": "poweradvantage:fluid_discharge"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{ "transform": "forge:default-block"}],
+    "facing": {
+      "north": {},
+      "south": {"y": 180},
+      "west": {"y": 270},
+      "east": {"y": 90},
+      "up": {"x": -90},
+      "down": {"x": 90}
     }
+  }
 }
