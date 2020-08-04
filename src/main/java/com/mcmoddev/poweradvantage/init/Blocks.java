@@ -7,6 +7,7 @@ import com.mcmoddev.lib.material.MMDMaterial;
 import com.mcmoddev.lib.block.MMDBlockWithTile;
 
 import com.mcmoddev.poweradvantage.PowerAdvantage;
+import com.mcmoddev.poweradvantage.blocks.BlockFluidDrain;
 import com.mcmoddev.poweradvantage.blocks.BlockFrame;
 import com.mcmoddev.poweradvantage.blocks.BlockInfinitePower;
 import com.mcmoddev.poweradvantage.blocks.BlockInfiniteSteam;
@@ -14,6 +15,7 @@ import com.mcmoddev.poweradvantage.data.Names;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -27,11 +29,13 @@ public class Blocks extends com.mcmoddev.lib.init.Blocks {
 
     private static void addNewBlock(Block block, String name, MMDMaterial material, CreativeTabs tab) {
     	addBlock(block, name, material, tab);
+    	PowerAdvantage.LOGGER.info("Adding block %s (%s) to material %s", block.getRegistryName(), name, material.getCapitalizedName());
     	material.addNewBlock(name, block);
     	addNewItemBlock(block, name, material);
     }
     
     private static void addNewItemBlock(Block block, String name, MMDMaterial material) {
+    	PowerAdvantage.LOGGER.info("Adding ItemBlock for %s (%s) to material %s", block.getRegistryName(), name, material.getCapitalizedName());
     	String fullName = String.format("machine_%s", name);
     	ItemMMDBlock itemBlock = new ItemMMDBlock(material, block);
     	itemBlock.setRegistryName(block.getRegistryName());
@@ -51,6 +55,7 @@ public class Blocks extends com.mcmoddev.lib.init.Blocks {
     	Block steelFrame = new BlockFrame(Materials.getMaterialByName("steel"));
     	steelFrame.setHardness(0.75f);
     	addNewBlock(steelFrame, Names.STEEL_FRAME.toString(), myMat, pa_tab);
+    	addNewBlock(new BlockFluidDrain(), Names.FLUID_DRAIN.toString(), myMat, pa_tab);
     	PowerAdvantage.LOGGER.info("End of block registration, %d blocks registered with MMDLib", myMat.getBlocks().size());
     }
     
