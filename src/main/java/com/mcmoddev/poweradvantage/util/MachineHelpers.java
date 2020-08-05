@@ -23,19 +23,26 @@ public class MachineHelpers {
 	}
 
 	@Nullable
-	public static IEnergyStorage getEnergyNoChecks(TileEntity tile, EnumFacing facing) {
-		if (tile == null) {
-			return null;
-		} else if (tile.hasCapability(CapabilityEnergy.ENERGY, facing)) {
-			return (IEnergyStorage) tile.getCapability(CapabilityEnergy.ENERGY, facing);
+	public static IEnergyStorage getEnergyCapability(TileEntity tile, EnumFacing facing) {
+		if (hasCapability(tile, CapabilityEnergy.ENERGY, facing)) {
+			return getEnergyNoChecks(tile, facing);
 		}
 		
 		return null;
 	}
+	
+	@Nullable
+	private static IEnergyStorage getEnergyNoChecks(TileEntity tile, EnumFacing facing) {
+		if (tile == null) {
+			return null;
+		}
+		
+		return (IEnergyStorage) tile.getCapability(CapabilityEnergy.ENERGY, facing);
+	}
 
 	@Nullable
 	public static IEnergyStorage getEnergyIfSendPossible(TileEntity tile, EnumFacing facing) {
-		IEnergyStorage r = getEnergyNoChecks(tile, facing);
+		IEnergyStorage r = getEnergyCapability(tile, facing);
 		if (r == null || !r.canExtract()) {
 			return null;
 		}
@@ -45,7 +52,7 @@ public class MachineHelpers {
 	
 	@Nullable
 	public static IEnergyStorage getEnergyIfReceivePossible(TileEntity tile, EnumFacing facing) {
-		IEnergyStorage r = getEnergyNoChecks(tile, facing);
+		IEnergyStorage r = getEnergyCapability(tile, facing);
 		if (r == null || !r.canReceive()) {
 			return null;
 		}
@@ -54,19 +61,26 @@ public class MachineHelpers {
 	}
 	
 	@Nullable
-	public static IFluidHandler getFluidNoChecks(TileEntity tile, EnumFacing facing) {
-		if (tile == null) {
-			return null;
-		} else if (tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing)) {
-			return (IFluidHandler) tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
+	public static IFluidHandler getFluidCapability(TileEntity tile, EnumFacing facing) {
+		if (hasCapability(tile, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing)) {
+			return getFluidNoChecks(tile, facing);
 		}
 		
 		return null;
 	}
+	
+	@Nullable
+	private static IFluidHandler getFluidNoChecks(TileEntity tile, EnumFacing facing) {
+		if (tile == null) {
+			return null;
+		} 
+			
+		return (IFluidHandler) tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
+	}
 
 	@Nullable
 	public static IFluidHandler getFluidIfSendPossible(TileEntity tile, EnumFacing facing) {
-		IFluidHandler fh = getFluidNoChecks(tile, facing);
+		IFluidHandler fh = getFluidCapability(tile, facing);
 		if (fh == null || fh.drain(1000, false) == null ) {
 			return null;
 		} else if (fh.drain(1000, false).amount == 0) {
@@ -78,7 +92,7 @@ public class MachineHelpers {
 	
 	@Nullable
 	public static IFluidHandler getFluidIfReceivePossible(TileEntity tile, EnumFacing facing) {
-		IFluidHandler fh = getFluidNoChecks(tile, facing);
+		IFluidHandler fh = getFluidCapability(tile, facing);
 		if (fh == null) {
 			return null;
 		} else {
