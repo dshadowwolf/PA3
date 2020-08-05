@@ -22,26 +22,34 @@ public class MachineHelpers {
         throw new IllegalAccessError(SharedStrings.NOT_INSTANTIABLE);		
 	}
 
+	/**
+	 * Gets the IEnergyStorage capability of a specified facing of a TE, if it exists.
+	 * @param tile The TileEntity to get the Capability from - if this parameter is null, the result is null
+	 * @param facing The facing to check for the capability - this may be null, with results as noted for TileEntity.getCapability
+	 * @return the IEnergyStorage capability of the TileEntity or null
+	 */
 	@Nullable
-	public static IEnergyStorage getEnergyCapability(TileEntity tile, EnumFacing facing) {
-		if (hasCapability(tile, CapabilityEnergy.ENERGY, facing)) {
+	public static IEnergyStorage getEnergyCapability(@Nullable final TileEntity tile, @Nullable final EnumFacing facing) {
+		if (tile != null && hasCapability(tile, CapabilityEnergy.ENERGY, facing)) {
 			return getEnergyNoChecks(tile, facing);
 		}
 		
 		return null;
 	}
 	
-	@Nullable
-	private static IEnergyStorage getEnergyNoChecks(TileEntity tile, EnumFacing facing) {
-		if (tile == null) {
-			return null;
-		}
-		
+	@Nonnull
+	private static IEnergyStorage getEnergyNoChecks(@Nonnull final TileEntity tile, @Nullable final EnumFacing facing) {
 		return (IEnergyStorage) tile.getCapability(CapabilityEnergy.ENERGY, facing);
 	}
 
+	/**
+	 * Get the IEnergyStorage capability of the specified facing of a TE, if it exists and can send/extract/transmit energy
+	 * @param tile The TileEntity to look at - if this parameter is null, the result of the call will be null.
+	 * @param facing The facing to check for the capability - this may be null, with results as noted for TileEntity.getCapability
+	 * @return The TE's IEnergyStorage if it exists and can send power or null
+	 */
 	@Nullable
-	public static IEnergyStorage getEnergyIfSendPossible(TileEntity tile, EnumFacing facing) {
+	public static IEnergyStorage getEnergyIfSendPossible(@Nullable final TileEntity tile, @Nullable final EnumFacing facing) {
 		IEnergyStorage r = getEnergyCapability(tile, facing);
 		if (r == null || !r.canExtract()) {
 			return null;
@@ -50,6 +58,12 @@ public class MachineHelpers {
 		return r;
 	}
 	
+	/**
+	 * Get the IEnergyStorage capability of the specified facing of a TE, if it exists and can receive energy
+	 * @param tile The TileEntity to look at - if this parameter is null, the result of the call will be null.
+	 * @param facing The facing to check for the capability - this may be null, with results as noted for TileEntity.getCapability
+	 * @return The TE's IEnergyStorage if it exists and can receive power or null
+	 */
 	@Nullable
 	public static IEnergyStorage getEnergyIfReceivePossible(TileEntity tile, EnumFacing facing) {
 		IEnergyStorage r = getEnergyCapability(tile, facing);
@@ -60,6 +74,12 @@ public class MachineHelpers {
 		return r;		
 	}
 	
+	/**
+	 * Gets the IFluidHandler capability of a specified facing of a TE, if it exists.
+	 * @param tile The TileEntity to get the Capability from - if this parameter is null, the result is null
+	 * @param facing The facing to check for the capability - this may be null, with results as noted for TileEntity.getCapability
+	 * @return the IFluidHandler capability of the TileEntity or null
+	 */
 	@Nullable
 	public static IFluidHandler getFluidCapability(TileEntity tile, EnumFacing facing) {
 		if (hasCapability(tile, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing)) {
@@ -78,6 +98,12 @@ public class MachineHelpers {
 		return (IFluidHandler) tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
 	}
 
+	/**
+	 * Get the IFluidHandler capability of the specified facing of a TE, if it exists and can be drained of a fluid
+	 * @param tile The TileEntity to look at - if this parameter is null, the result of the call will be null.
+	 * @param facing The facing to check for the capability - this may be null, with results as noted for TileEntity.getCapability
+	 * @return The TE's IFluidHandler if it exists and can be drained or null
+	 */
 	@Nullable
 	public static IFluidHandler getFluidIfSendPossible(TileEntity tile, EnumFacing facing) {
 		IFluidHandler fh = getFluidCapability(tile, facing);
@@ -90,6 +116,12 @@ public class MachineHelpers {
 		return fh;
 	}
 	
+	/**
+	 * Get the IFluidHandler capability of the specified facing of a TE, if it exists and can store more of a fluid
+	 * @param tile The TileEntity to look at - if this parameter is null, the result of the call will be null.
+	 * @param facing The facing to check for the capability - this may be null, with results as noted for TileEntity.getCapability
+	 * @return The TE's IFluidHandler if it exists and can store more or null
+	 */
 	@Nullable
 	public static IFluidHandler getFluidIfReceivePossible(TileEntity tile, EnumFacing facing) {
 		IFluidHandler fh = getFluidCapability(tile, facing);
@@ -103,31 +135,60 @@ public class MachineHelpers {
 		return null;
 	}
 	
+	/**
+	 * Get the TileEntity of a block next to a given position
+	 * @param worldIn The "World" where the check is to happen
+	 * @param pos The position in the world of the block to check for a TE in a block touching one of its faces
+	 * @param facing The face of the block to offset from to get the TE
+	 * @return The found TileEntity or null
+	 */
 	@Nullable
 	public static TileEntity getNeighboringTileEntity(World worldIn, BlockPos pos, EnumFacing facing) {
 		return worldIn.getTileEntity(pos.offset(facing));
 	}
-	
+
+	/**
+	 * Possibly interact with the TE adjacent to the position of the current TileEntity
+	 * @param source the TileEntity that is the "source" or "center" of the interaction
+	 * @param offsetFacing which face to offset from
+	 * @param maxAmount How much fluid to try and send
+	 * @return the amount of fluid sent - 0 if it was not possible to send anything or a TE did not exist off that face
+	 */
 	@Nullable
-	public static int doFluidSendInteractionByOffset(TileEntity source, EnumFacing offsetFacing, int maxAmount, EnumFacing sourceFacing) {
-		return doFluidSendInteraction(source, getNeighboringTileEntity(source.getWorld(), source.getPos(), offsetFacing), maxAmount, sourceFacing);
-	}
-	
-	@Nullable
-	public static int doFluidSendInteractionWithBlock(TileEntity source, BlockPos target, int maxAmount, EnumFacing sourceFacing) {
-		return doFluidSendInteraction(source, source.getWorld().getTileEntity(target), maxAmount, sourceFacing);
+	public static int doFluidSendInteractionByOffset(@Nonnull final TileEntity source, @Nullable final EnumFacing offsetFacing, final int maxAmount) {
+		return doFluidSendInteraction(source, getNeighboringTileEntity(source.getWorld(), source.getPos(), offsetFacing), maxAmount, offsetFacing);
 	}
 
+	/**
+	 * Does the specified TileEntity have the specified capability for the specified facing ?
+	 * @param tile The TileEntity to check
+	 * @param capability The Capability to check for
+	 * @param facing The facing to check for the capability
+	 * @return true if the capability exists, otherwise false
+	 */
 	@Nonnull
-	public static boolean hasCapability(TileEntity source, Capability<?> capability, EnumFacing facing) {
-		return source.hasCapability(capability, facing);
+	public static boolean hasCapability(@Nonnull final TileEntity tile, @Nonnull final Capability<?> capability, @Nullable final EnumFacing facing) {
+		return tile.hasCapability(capability, facing);
 	}
 	
-	public static boolean hasFluidCapability(TileEntity source, EnumFacing facing) {
-		return hasCapability(source, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
+	/**
+	 * Does the specified TileEntity have fluid handling capabilities ?
+	 * @param tile The TileEntity to check
+	 * @param facing The facing to check for the capability
+	 * @return true if the capability exists, otherwise false
+	 */
+	@Nonnull
+	public static boolean hasFluidCapability(@Nonnull final TileEntity tile, @Nonnull final EnumFacing facing) {
+		return hasCapability(tile, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
 	}
 	
-	public static boolean hasEnergyCapability(TileEntity source, EnumFacing facing) {
+	/**
+	 * Does the specified TileEntity have energy handling capabilities ?
+	 * @param tile The TileEntity to check
+	 * @param facing The facing to check for the capability
+	 * @return true if the capability exists, otherwise false
+	 */
+	public static boolean hasEnergyCapability(@Nonnull final TileEntity source, @Nonnull final EnumFacing facing) {
 		return hasCapability(source, CapabilityEnergy.ENERGY, facing);
 	}
 	
