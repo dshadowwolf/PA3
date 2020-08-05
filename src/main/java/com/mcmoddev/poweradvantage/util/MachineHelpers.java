@@ -221,7 +221,12 @@ public class MachineHelpers {
 
 	public static int doPowerGetInteraction(TileEntity source, TileEntity target, int maxAmount, EnumFacing sourceFacing) {
 		if (source == null || target == null) return 0;
-		return doPowerGetInteractionInternal(source, target, maxAmount, sourceFacing);
+		
+		if (hasEnergyCapability(source, sourceFacing) && hasEnergyCapability(target, sourceFacing.getOpposite())) {
+			return doPowerGetInteractionInternal(source, target, maxAmount, sourceFacing);
+		}
+		
+		return 0;
 	}
 
 	private static int doPowerGetInteractionInternal(TileEntity source, TileEntity target, int maxAmount, EnumFacing sourceFacing) {
