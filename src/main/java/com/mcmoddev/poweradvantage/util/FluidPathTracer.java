@@ -33,7 +33,9 @@ public class FluidPathTracer {
 			} else {
 				toDrain = searchAnyFluids(world, startingPos.up(), getAmount);
 			}
-		} else if (FluidUtils.fluidsMatch(fluidType, f)) {
+		} else if(fluidType == null) {
+			toDrain = searchAnyFluids(world, startingPos.up(), getAmount);
+		} else if(FluidUtils.fluidsMatch(fluidType, f)) {
 			FluidStack possible = FluidUtils.drainBlock(world, startingPos, false);
 			// possible should not be null, as we've already checked that its the right fluid there
 			// so the it should return something - unless that block cannot be drained.

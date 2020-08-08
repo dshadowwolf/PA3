@@ -17,10 +17,12 @@ public class FluidDrainFeature extends FluidTankFeature implements ITickable {
 	private final static int TICKS_PER_WORK = 30;
 	private final TileEntity source;
 	private int nextWork = TICKS_PER_WORK;
+	private final int configuredCapacity;
 	
 	public FluidDrainFeature(String key, int capacity, TileEntity source) {
 		super(key, capacity, fs -> true, fs -> true);
 		this.source = source;
+		this.configuredCapacity = capacity;
 	}
 
 	@Nullable
@@ -44,13 +46,15 @@ public class FluidDrainFeature extends FluidTankFeature implements ITickable {
 		if (getExternalTank().getFluid() != null) {
 			// see if we can push to a neighboring TE that has fluid handler caps
 			for (EnumFacing f : EnumFacing.VALUES) {
-				MachineHelpers.doFluidSendInteraction(source, source.getWorld().getTileEntity(source.getPos().offset(f)), 1000, f);
+				MachineHelpers.doFluidSendInteraction(source, source.getWorld().getTileEntity(source.getPos().offset(f)), configuredCapacity, f);
 			}
 		}
 
 		// try to fill from the world
 		FluidStack contained = getExternalTank().getFluid();
-		FluidStack fluidFill = FluidPathTracer.trace(source.getWorld(), source.getPos().up(), contained == null ? null : contained.getFluid(), 1000);
-		getExternalTank().fill(fluidFill, true);
+		if (contained == null || contained.amount != configuredCapacity) {
+			FluidStack fluidFill = FluidPathTracer.trace(source.getWorld(), source.getPos().up(), contained == null ? null : contained.getFluid(), configuredCapacity <= 4000 ? configuredCapacity : 4000);
+			getExternalTank().fill(fluidFill, true);
+		}
 	}
 }
