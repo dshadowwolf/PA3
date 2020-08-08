@@ -12,6 +12,7 @@ import com.mcmoddev.poweradvantage.blocks.BlockFluidDrain;
 import com.mcmoddev.poweradvantage.blocks.BlockFrame;
 import com.mcmoddev.poweradvantage.blocks.BlockInfinitePower;
 import com.mcmoddev.poweradvantage.blocks.BlockInfiniteSteam;
+import com.mcmoddev.poweradvantage.blocks.StorageTankBlock;
 import com.mcmoddev.poweradvantage.data.Names;
 
 import net.minecraft.block.Block;
@@ -57,6 +58,8 @@ public class Blocks extends com.mcmoddev.lib.init.Blocks {
     	addNewBlock(steelFrame, Names.STEEL_FRAME.toString(), myMat, pa_tab);
     	addNewBlock(new BlockFluidDrain(), Names.FLUID_DRAIN.toString(), myMat, pa_tab);
     	addNewBlock(new BlockFluidDischarge(), Names.FLUID_DISCHARGE.toString(), myMat, pa_tab);
+    	addNewBlock(new StorageTankBlock(myMat, "fluid_storage_tank", 4000), Names.FLUID_STORAGE_TANK.toString(), myMat, pa_tab);
+    	addNewBlock(new StorageTankBlock(myMat, "fluid_metal_tank", 16000), Names.FLUID_METAL_TANK.toString(), myMat, pa_tab);
     	PowerAdvantage.LOGGER.info("End of block registration, %d blocks registered with MMDLib", myMat.getBlocks().size());
     }
     
@@ -71,7 +74,9 @@ public class Blocks extends com.mcmoddev.lib.init.Blocks {
     	MMDMaterial machines = Materials.getMaterialByName("pa-machines");
     	PowerAdvantage.LOGGER.info("Trying to register my blocks - %d in number", machines.getBlocks().size());
     	machines.getBlocks().stream().forEach( bl -> { PowerAdvantage.LOGGER.info("Registering block %s", bl.getRegistryName()) ; event.getRegistry().register(bl); } );
-    	machines.getBlocks().stream().filter( bl -> bl instanceof MMDBlockWithTile).forEach( bl -> ((MMDBlockWithTile)bl).registerTile());
+    	machines.getBlocks().stream().filter( bl -> bl instanceof MMDBlockWithTile).filter( bl -> !(bl instanceof StorageTankBlock)).forEach( bl -> ((MMDBlockWithTile)bl).registerTile());
+    	// special case this - the TE here gets reused!
+    	((MMDBlockWithTile)machines.getBlock(Names.FLUID_STORAGE_TANK.toString())).registerTile();
     	event.getRegistry().register(machines.getFluidBlock());
     }
 
