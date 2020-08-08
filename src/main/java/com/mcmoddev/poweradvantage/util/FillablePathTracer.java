@@ -1,5 +1,6 @@
 package com.mcmoddev.poweradvantage.util;
 
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -23,8 +24,9 @@ public class FillablePathTracer {
 		throw new IllegalAccessError(SharedStrings.NOT_INSTANTIABLE);		
 	}
 
-	// this is broken and doesn't stop at walls - the FluidPathTracer code might have the same issue
 	public static List<BlockPos> searchFillableBlocks(World world, BlockPos start, int numBlocks) {
+		if (!FluidUtils.isFillable(world, start)) return Collections.emptyList();
+		
 		Deque<BlockPos> workQ = new LinkedList<>();
 		Set<BlockPos> seenBlocks = new HashSet<>();
 		List<BlockPos> blocks = new LinkedList<>();
@@ -36,14 +38,12 @@ public class FillablePathTracer {
 
 			seenBlocks.add(workingPos);
 			
-			if (FluidUtils.isFillableBlock(world, workingPos)) {
-				blocks.add(workingPos);
-			}
+			blocks.add(workingPos);
 			
 			for(EnumFacing facing : possibles) {
 				BlockPos temp = workingPos.offset(facing);
 				double distance = start.getDistance(temp.getX(), temp.getY(), temp.getZ());
-				if (!seenBlocks.contains(temp) && distance <= WORKING_RANGE) workQ.add(temp);
+				if (!seenBlocks.contains(temp) && distance <= WORKING_RANGE && FluidUtils.isFillableBlock(world, temp)) workQ.add(temp);
 			}
 		}
 		

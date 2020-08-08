@@ -2,6 +2,7 @@ package com.mcmoddev.poweradvantage.feature;
 
 import com.mcmoddev.lib.feature.FluidTankFeature;
 import com.mcmoddev.poweradvantage.util.FillablePathTracer;
+import com.mcmoddev.poweradvantage.util.FluidUtils;
 import com.mcmoddev.poweradvantage.util.MachineHelpers;
 
 import net.minecraft.tileentity.TileEntity;
@@ -36,8 +37,10 @@ public class FluidDischargeFeature extends FluidTankFeature implements ITickable
 		
 		if ( getExternalTank().getFluid() == null || getExternalTank().getFluidAmount() < 1000 ) return;
 		
-		int drainBuckets = getExternalTank().getFluidAmount() / 1000;
-		int drainAmount = FillablePathTracer.fillBlocks(source.getWorld(), source.getPos().down(), getExternalTank().getFluid().getFluid(), drainBuckets);
-		getExternalTank().drain(drainAmount, true);
+		if (FluidUtils.isFillableBlock(source.getWorld(), source.getPos().down()) || FluidUtils.isFillableFluid(source.getWorld(), source.getPos().down())) {
+			int drainBuckets = getExternalTank().getFluidAmount() / 1000;
+			int drainAmount = FillablePathTracer.fillBlocks(source.getWorld(), source.getPos().down(), getExternalTank().getFluid().getFluid(), drainBuckets);
+			getExternalTank().drain(drainAmount, true);
+		}
 	}
 }

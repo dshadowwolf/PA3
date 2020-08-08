@@ -174,4 +174,8 @@ public class FluidUtils {
 		
 		return null;
 	}
+
+	public static boolean isFillable(World world, BlockPos pos) {
+		return isFillableBlock(world, pos) || isFillableFluid(world, pos);
+	}
 }
