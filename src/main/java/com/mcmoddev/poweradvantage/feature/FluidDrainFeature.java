@@ -3,6 +3,7 @@ package com.mcmoddev.poweradvantage.feature;
 import javax.annotation.Nullable;
 
 import com.mcmoddev.lib.feature.FluidTankFeature;
+import com.mcmoddev.poweradvantage.util.FluidPathTracer;
 import com.mcmoddev.poweradvantage.util.MachineHelpers;
 
 import net.minecraft.tileentity.TileEntity;
@@ -10,6 +11,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidStack;
 
 public class FluidDrainFeature extends FluidTankFeature implements ITickable {
 	private final static int TICKS_PER_WORK = 30;
@@ -45,7 +47,10 @@ public class FluidDrainFeature extends FluidTankFeature implements ITickable {
 				MachineHelpers.doFluidSendInteraction(source, source.getWorld().getTileEntity(source.getPos().offset(f)), 1000, f);
 			}
 		}
-		
+
 		// try to fill from the world
+		FluidStack contained = getExternalTank().getFluid();
+		FluidStack fluidFill = FluidPathTracer.trace(source.getWorld(), source.getPos().up(), contained == null ? null : contained.getFluid(), 1000);
+		getExternalTank().fill(fluidFill, true);
 	}
 }
