@@ -23,6 +23,7 @@ public class FillablePathTracer {
 		throw new IllegalAccessError(SharedStrings.NOT_INSTANTIABLE);		
 	}
 
+	// this is broken and doesn't stop at walls - the FluidPathTracer code might have the same issue
 	public static List<BlockPos> searchFillableBlocks(World world, BlockPos start, int numBlocks) {
 		Deque<BlockPos> workQ = new LinkedList<>();
 		Set<BlockPos> seenBlocks = new HashSet<>();
