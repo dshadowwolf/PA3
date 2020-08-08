@@ -24,19 +24,19 @@ public class FluidUtils {
         throw new IllegalAccessError(SharedStrings.NOT_INSTANTIABLE);
 	}
 	
-	public static int getFluidAmountFromBlock(World worldIn, BlockPos pos) {
-		FluidStack fluidStack = getFluidStackFromBlock(worldIn, pos);
+	public static int getFluidAmountFromBlock(World world, BlockPos pos) {
+		FluidStack fluidStack = getFluidStackFromBlock(world, pos);
 		return fluidStack != null ? fluidStack.amount : 0;
 	}
 
-	public static FluidStack getFluidStackFromBlock(World worldIn, BlockPos pos) {
-		IBlockState blockState = worldIn.getBlockState(pos);
+	public static FluidStack getFluidStackFromBlock(World world, BlockPos pos) {
+		IBlockState blockState = world.getBlockState(pos);
 		Block block = blockState.getBlock();
 		int meta = block.getMetaFromState(blockState);
 		
 		if (block instanceof IFluidBlock) {
 			IFluidBlock fluidBlock = ((IFluidBlock) block);
-			return new FluidStack(fluidBlock.getFluid(), (int) (Fluid.BUCKET_VOLUME * fluidBlock.getFilledPercentage(worldIn, pos)));
+			return new FluidStack(fluidBlock.getFluid(), (int) (Fluid.BUCKET_VOLUME * fluidBlock.getFilledPercentage(world, pos)));
 		} else if (block == Blocks.WATER || block == Blocks.FLOWING_WATER && meta == 0) {
 				return new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME);
 		} else if (block == Blocks.LAVA || block == Blocks.FLOWING_LAVA && meta == 0) {
@@ -46,75 +46,75 @@ public class FluidUtils {
 		return null;
 	}
 
-	public static Fluid getFluidFromBlock(World worldIn, BlockPos pos) {
-		FluidStack fs = getFluidStackFromBlock(worldIn, pos);
+	public static Fluid getFluidFromBlock(World world, BlockPos pos) {
+		FluidStack fs = getFluidStackFromBlock(world, pos);
 		return fs != null ? fs.getFluid() : null;
 	}
 	
-	public static FluidStack drainBlock(World worldIn, BlockPos pos) {
-		return drainBlock(worldIn, pos, 3); // call with proper update flags
+	public static FluidStack drainBlock(World world, BlockPos pos) {
+		return drainBlock(world, pos, 3); // call with proper update flags
 	}
 	
-	public static FluidStack drainBlock(World worldIn, BlockPos pos, boolean doDrain) {
-		if (doDrain) return drainBlock(worldIn, pos);
+	public static FluidStack drainBlock(World world, BlockPos pos, boolean doDrain) {
+		if (doDrain) return drainBlock(world, pos);
 		
-		if (worldIn == null || pos == null) return null;
+		if (world == null || pos == null) return null;
 		
-		FluidStack fs = getFluidStackFromBlock(worldIn, pos);
+		FluidStack fs = getFluidStackFromBlock(world, pos);
 		
 		if (fs == null) return null;
 		
 		Block f = fs.getFluid().getBlock();
 		
-		if (f instanceof IFluidBlock && ((IFluidBlock)f).canDrain(worldIn, pos) ||
+		if (f instanceof IFluidBlock && ((IFluidBlock)f).canDrain(world, pos) ||
 				f == Blocks.WATER || f == Blocks.FLOWING_WATER || f == Blocks.LAVA || f == Blocks.FLOWING_LAVA )
 			return fs;
 		return null;
 	}
 	
-	public static FluidStack drainBlock(World worldIn, BlockPos pos, int updateFlags) {
-		if (worldIn == null || pos == null) return null;
+	public static FluidStack drainBlock(World world, BlockPos pos, int updateFlags) {
+		if (world == null || pos == null) return null;
 		
-		FluidStack fs = getFluidStackFromBlock(worldIn, pos);
+		FluidStack fs = getFluidStackFromBlock(world, pos);
 		
 		if (fs == null) return null;
 		
 		Block f = fs.getFluid().getBlock();
 		
-		if (f instanceof IFluidBlock && ((IFluidBlock) f).canDrain(worldIn, pos)) {
-				return ((IFluidBlock) f).drain(worldIn, pos, true);
+		if (f instanceof IFluidBlock && ((IFluidBlock) f).canDrain(world, pos)) {
+				return ((IFluidBlock) f).drain(world, pos, true);
 		} else {
-			worldIn.setBlockState(pos, Blocks.AIR.getDefaultState(), updateFlags);
+			world.setBlockState(pos, Blocks.AIR.getDefaultState(), updateFlags);
 			return fs;
 		}
 	}
 	
-	public static boolean isFillableBlock(World worldIn, BlockPos pos)
+	public static boolean isFillableBlock(World world, BlockPos pos)
 	{
-		if (worldIn == null || pos == null) return false;
+		if (world == null || pos == null) return false;
 
-		IBlockState blockState = worldIn.getBlockState(pos); 
+		IBlockState blockState = world.getBlockState(pos); 
 		Block block = blockState.getBlock();
 
-		if (drainBlock(worldIn, pos, false) != null) {
+		if (drainBlock(world, pos, false) != null) {
 			return false;
-		} else if (block.isAir(blockState, worldIn, pos)) {
+		} else if (block.isAir(blockState, world, pos)) {
 			return true;
-		} else if (!(block instanceof IFluidBlock || block instanceof BlockLiquid) && block.isReplaceable(worldIn, pos)) {
+		} else if (!(block instanceof IFluidBlock || block instanceof BlockLiquid) && block.isReplaceable(world, pos)) {
 			return true;
 		}
 		return false;
 	}
 	
-	public static boolean isFillableFluid(World worldIn, BlockPos pos)
+	public static boolean isFillableFluid(World world, BlockPos pos)
 	{
-		if (worldIn == null || pos == null) return false;
+		if (world == null || pos == null) return false;
 
-		IBlockState blockState = worldIn.getBlockState(pos);
+		IBlockState blockState = world.getBlockState(pos);
 		Block block = blockState.getBlock();
 		int meta = block.getMetaFromState(blockState);
 
-		if (drainBlock(worldIn, pos, false) != null) {
+		if (drainBlock(world, pos, false) != null) {
 			return false;
 		} else if (block instanceof IFluidBlock || block instanceof BlockLiquid) {
 			return !(meta == 0);
@@ -127,31 +127,58 @@ public class FluidUtils {
 		else return null;
 	}
 	
-	public static int fillBlock(World worldIn, BlockPos pos, FluidStack stack, boolean doFill)
+	public static int fillBlock(World world, BlockPos pos, FluidStack stack, boolean doFill)
 	{
-		EntityPlayer faked = FakePlayerFactory.getMinecraft((WorldServer) worldIn);
-		if ((isFillableBlock(worldIn, pos) || isFillableFluid(worldIn, pos)) && stack != null && stack.amount >= Fluid.BUCKET_VOLUME) {
+		EntityPlayer faked = FakePlayerFactory.getMinecraft((WorldServer) world);
+		if ((isFillableBlock(world, pos) || isFillableFluid(world, pos)) && stack != null && stack.amount >= Fluid.BUCKET_VOLUME) {
 			if (doFill)	{
-				IBlockState blockState = worldIn.getBlockState(pos);
+				IBlockState blockState = world.getBlockState(pos);
 				Block block = blockState.getBlock();
 
 				BlockPos nPos = pos.offset(EnumFacing.UP);
 				IFluidBlock fb = getFluidBlock(stack.getFluid().getBlock());
 				
 				if (block != null) {
-					if (block == Blocks.WATER && worldIn.isAirBlock(nPos)) {
-						worldIn.setBlockState(nPos, blockState, 3);
-					} else if (fb != null && net.minecraftforge.fluids.FluidUtil.tryPlaceFluid(faked, worldIn, nPos, ItemStack.EMPTY, stack).isSuccess()) {
-						block.dropBlockAsItem(worldIn, pos, blockState, 1);
-						block.breakBlock(worldIn, pos, blockState);
+					if (block == Blocks.WATER && world.isAirBlock(nPos)) {
+						world.setBlockState(nPos, blockState, 3);
+					} else if (fb != null && net.minecraftforge.fluids.FluidUtil.tryPlaceFluid(faked, world, nPos, ItemStack.EMPTY, stack).isSuccess()) {
+						block.dropBlockAsItem(world, pos, blockState, 1);
+						block.breakBlock(world, pos, blockState);
 					}
 				}
 
-				worldIn.setBlockState(nPos, stack.getFluid().getBlock().getDefaultState(), 3);
+				world.setBlockState(nPos, stack.getFluid().getBlock().getDefaultState(), 3);
 			}
 			return Fluid.BUCKET_VOLUME;
 		}
 		return 0;
 	}
 
+	public static boolean fluidsMatch(String mainName, String matchName) {
+		FluidStack main = FluidRegistry.getFluidStack(mainName, 1000);
+		FluidStack match = FluidRegistry.getFluidStack(matchName, 1000);
+		return (main != null && match != null) && fluidsMatch(main, match);
+	}
+	
+	public static boolean fluidsMatch(Fluid main, Fluid match) {
+		if (main == null && match == null) {
+			return true; // null matches null
+		} else {
+			return fluidsMatch(main.getName(), match.getName());
+		}
+	}
+
+	public static boolean fluidsMatch(FluidStack main, FluidStack match) {
+		return main.isFluidEqual(match);
+	}
+	
+	public static boolean fluidsMatchExact(FluidStack main, FluidStack match) {
+		return fluidsMatch(main, match) && main.amount == match.amount;
+	}
+	
+	public static FluidStack drain(World world, BlockPos pos, int amount) {
+		if(drainBlock(world, pos, false).amount == amount) return drainBlock(world, pos, true);
+		
+		return null;
+	}
 }
