@@ -13,6 +13,7 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 public class StorageTankBlock extends BlockSimpleMachine<StorageTankTileEntity> {
 	public StorageTankBlock(MMDMaterial material, String name, int capacity) {
@@ -70,4 +71,15 @@ public class StorageTankBlock extends BlockSimpleMachine<StorageTankTileEntity> 
     public EnumBlockRenderType getRenderType(IBlockState bs) {
         return EnumBlockRenderType.MODEL;
     }
+	
+	@Override
+	public boolean hasComparatorInputOverride(IBlockState bs) {
+		return true;
+	}
+	
+	@Override
+	public int getComparatorInputOverride(IBlockState bs, World world, BlockPos coord) {
+		return this.getWeakPower(bs, world, coord, null);
+	}
+
 }
