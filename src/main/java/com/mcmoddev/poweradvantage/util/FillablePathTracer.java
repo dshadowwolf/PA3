@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.mcmoddev.lib.data.SharedStrings;
 
@@ -24,8 +25,9 @@ public class FillablePathTracer {
 		throw new IllegalAccessError(SharedStrings.NOT_INSTANTIABLE);		
 	}
 
-	public static List<BlockPos> searchFillableBlocks(World world, BlockPos start, int numBlocks) {
-		if (!FluidUtils.isFillable(world, start)) return Collections.emptyList();
+	public static List<BlockPos> searchFillableBlocks(World world, BlockPos start, Fluid fillFluid, int numBlocks) {
+		Fluid ff = FluidUtils.getFluidFromBlock(world, start);
+		if ((ff  != null && !FluidUtils.fluidsMatch(ff, fillFluid)) && !FluidUtils.isFillable(world, start) ) return Collections.emptyList();
 		
 		Deque<BlockPos> workQ = new LinkedList<>();
 		Set<BlockPos> seenBlocks = new HashSet<>();
@@ -51,7 +53,8 @@ public class FillablePathTracer {
 	}
 	
 	public static int fillBlocks(World world, BlockPos start, Fluid fillFluid, int fillBucketCount) {
-		List<BlockPos> blocksToFill = searchFillableBlocks(world, start, fillBucketCount);
+		// get fillable blocks, remove teh ones that are the fluid we're trying to fill with
+		List<BlockPos> blocksToFill = searchFillableBlocks(world, start, fillFluid, fillBucketCount).stream().filter(bp -> !FluidUtils.fluidsMatch(fillFluid, FluidUtils.getFluidFromBlock(world, bp))).collect(Collectors.toList());
 		int fillAmountRemaining = fillBucketCount*1000;
 		
 		for(BlockPos pos : blocksToFill) {

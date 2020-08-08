@@ -47,7 +47,7 @@ public class FluidUtils {
 	}
 	
 	public static FluidStack drainBlock(World world, BlockPos pos) {
-		return drainBlock(world, pos, 3); // call with proper update flags
+		return drainBlock(world, pos, 1|2); // call with proper update flags
 	}
 	
 	public static FluidStack drainBlock(World world, BlockPos pos, boolean doDrain) {
@@ -140,7 +140,7 @@ public class FluidUtils {
 					}
 				}
 
-				world.setBlockState(pos, fluidState, 3);
+				world.setBlockState(pos, fluidState, 1|2);
 			}
 			return Fluid.BUCKET_VOLUME;
 		}
@@ -156,6 +156,9 @@ public class FluidUtils {
 	public static boolean fluidsMatch(Fluid main, Fluid match) {
 		if (main == null && match == null) {
 			return true; // null matches null
+		} else if( main == null || match == null ){
+			// if we got here only one fluid is null and null never matches a fluid
+			return false;
 		} else {
 			return fluidsMatch(main.getName(), match.getName());
 		}

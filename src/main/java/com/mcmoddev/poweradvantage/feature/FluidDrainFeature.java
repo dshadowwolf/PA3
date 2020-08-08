@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 
 public class FluidDrainFeature extends FluidTankFeature implements ITickable {
-	private final static int TICKS_PER_WORK = 30;
+	private final static int TICKS_PER_WORK = 10;
 	private final TileEntity source;
 	private int nextWork = TICKS_PER_WORK;
 	private final int configuredCapacity;
