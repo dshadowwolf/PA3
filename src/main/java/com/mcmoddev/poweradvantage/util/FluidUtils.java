@@ -5,14 +5,9 @@ import com.mcmoddev.lib.data.SharedStrings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -129,25 +124,23 @@ public class FluidUtils {
 	
 	public static int fillBlock(World world, BlockPos pos, FluidStack stack, boolean doFill)
 	{
-		EntityPlayer faked = FakePlayerFactory.getMinecraft((WorldServer) world);
 		if ((isFillableBlock(world, pos) || isFillableFluid(world, pos)) && stack != null && stack.amount >= Fluid.BUCKET_VOLUME) {
 			if (doFill)	{
 				IBlockState blockState = world.getBlockState(pos);
 				Block block = blockState.getBlock();
 
-				BlockPos nPos = pos.offset(EnumFacing.UP);
-				IFluidBlock fb = getFluidBlock(stack.getFluid().getBlock());
+				Block bfb = stack.getFluid().getBlock();
+				IFluidBlock fb = getFluidBlock(bfb);
+				IBlockState fluidState = bfb.getDefaultState();
 				
 				if (block != null) {
-					if (block == Blocks.WATER && world.isAirBlock(nPos)) {
-						world.setBlockState(nPos, blockState, 3);
-					} else if (fb != null && net.minecraftforge.fluids.FluidUtil.tryPlaceFluid(faked, world, nPos, ItemStack.EMPTY, stack).isSuccess()) {
+					if (fb != null || world.isAirBlock(pos)) { 
 						block.dropBlockAsItem(world, pos, blockState, 1);
 						block.breakBlock(world, pos, blockState);
 					}
 				}
 
-				world.setBlockState(nPos, stack.getFluid().getBlock().getDefaultState(), 3);
+				world.setBlockState(pos, fluidState, 3);
 			}
 			return Fluid.BUCKET_VOLUME;
 		}

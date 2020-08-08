@@ -23,6 +23,7 @@ import net.minecraftforge.fluids.FluidStack;
  */
 public class FluidPathTracer {
 	private static final int WORKING_RANGE = 32;
+	private static final EnumFacing[] possibles = { EnumFacing.EAST, EnumFacing.WEST, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.UP };
 	private FluidPathTracer() {
 		throw new IllegalAccessError(SharedStrings.NOT_INSTANTIABLE);		
 	}
@@ -49,7 +50,7 @@ public class FluidPathTracer {
 				// search out and find enough to drain to meet "getAmount"
 				toDrain = searchMatchingFluids(world, startingPos, FluidRegistry.getFluidStack(fluidType.getName(), getAmount));
 			} else {
-					return FluidUtils.drain(world, startingPos, getAmount);
+				return FluidUtils.drain(world, startingPos, getAmount);
 			}
 		} else {
 			// fluid wasn't null, but also didn't match - so its not what we're looking for.
@@ -68,7 +69,7 @@ public class FluidPathTracer {
 
 	public static List<BlockPos> searchAnyFluids(World world, BlockPos start, int amount) {
 		Deque<BlockPos> workQ = new LinkedList<>();
-		List<BlockPos> seenBlocks = new LinkedList<>();
+		Set<BlockPos> seenBlocks = new HashSet<>();
 
 		workQ.push(start);
 
@@ -118,12 +119,12 @@ public class FluidPathTracer {
 	}
 
 	private static void enqueue_facings_any(World world, Deque<BlockPos> workQueue, BlockPos start) {
-		for (EnumFacing facing : EnumFacing.HORIZONTALS)
+		for (EnumFacing facing : possibles)
 			if (world.isAirBlock(start.offset(facing)) || FluidUtils.getFluidFromBlock(world, start.offset(facing)) != null) workQueue.add(start.offset(facing));
 	}
 
 	private static void enqueue_facings(World world, Deque<BlockPos> workQueue, BlockPos startingPos, Fluid match) {
-		for (EnumFacing facing : EnumFacing.HORIZONTALS) {
+		for (EnumFacing facing : possibles) {
 			Fluid test = FluidUtils.getFluidFromBlock(world, startingPos.offset(facing));
 			if (test != null && FluidUtils.fluidsMatch(match, test) || world.isAirBlock(startingPos.offset(facing))) {
 				workQueue.add(startingPos.offset(facing));
