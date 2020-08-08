@@ -16,6 +16,11 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
+/*
+ * Simple Breadth-first search across a given distance-range for fluids
+ * Thanks to @Robin QueenOfMissiles, @julian and @thecodewarrior in The Lair (private Discord server)
+ * for their assistance in checking the logic and identifying the correct algorithm to use for this.
+ */
 public class FluidPathTracer {
 	private static final int WORKING_RANGE = 32;
 	private FluidPathTracer() {
