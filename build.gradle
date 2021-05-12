@@ -3,7 +3,7 @@ buildscript {
     jcenter()
     maven {
       name = 'forge'
-      url = 'http://files.minecraftforge.net/maven'
+      url = 'http://maven.minecraftforge.net/'
     }
     maven {
       name = 'gradle'
@@ -169,7 +169,7 @@ repositories {
   }
   maven { // HWYLA
     name 'tehnut'
-    url 'http://tehnut.info/maven/'
+    url 'http://maven.tehnut.info/'
   }
   maven { // CoFH
     name 'Covers Maven'
@@ -197,7 +197,7 @@ repositories {
   }
   maven { // Applied Energistics
     name 'forge'
-    url 'https://files.minecraftforge.net/maven/'
+    url 'https://maven.minecraftforge.net/'
   }
 }
 

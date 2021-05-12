@@ -7,6 +7,9 @@ import com.mcmoddev.lib.container.gui.layout.GridLayout;
 import com.mcmoddev.lib.tile.MMDStandardTileEntity;
 import com.mcmoddev.poweradvantage.feature.FluidDrainFeature;
 
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 public class TileFluidDrain extends MMDStandardTileEntity {
 	private final FluidDrainFeature feat;
 	public TileFluidDrain() {
@@ -16,6 +19,7 @@ public class TileFluidDrain extends MMDStandardTileEntity {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	protected IWidgetGui getMainContentWidgetGui(GuiContext context) {
 		return  new GridLayout(1, 1)
                 .addPiece(new FeatureWrapperGui(context, this, "drain"), 0, 0, 1, 1);

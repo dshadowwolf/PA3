@@ -10,6 +10,8 @@ import com.mcmoddev.poweradvantage.feature.RedstoneSignallingFluidTankFeature;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class StorageTankTileEntity extends MMDStandardTileEntity implements ITickable {
 	private final FluidTankFeature tank;
@@ -30,6 +32,7 @@ public class StorageTankTileEntity extends MMDStandardTileEntity implements ITic
 	}
 	
 	@Override
+	@SideOnly(Side.CLIENT)
 	protected IWidgetGui getMainContentWidgetGui(GuiContext context) {
 		return new GridLayout(1, 1)
 				.addPiece(new FeatureWrapperGui(context, this, "tank"), 0, 0, 1, 1);
